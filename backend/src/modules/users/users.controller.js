@@ -5,6 +5,7 @@ import { AppError } from "../../utilities/AppError.js";
 import { sendEmail } from "../../utilities/email.js";
 import { verificationEmailTemplate } from "../../utilities/emailTemplate.js";
 
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -64,7 +65,7 @@ export const register = async (req, res, next) => {
   }
 };
 
-export const verifyEmail = async (req, res, next) => {
+export const verifyEmail = async (req, res) => {
   try {
     const { token } = req.params;
 
@@ -73,24 +74,25 @@ export const verifyEmail = async (req, res, next) => {
       process.env.EMAIL_TOKEN_SECRET
     );
 
-    const user = await userModel.findById(decoded.id);
+    const user = await userModel.findOne({
+      email: decoded.email
+    });
 
     if (!user) {
-      return next(new AppError("user not found", 404));
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/auth.html?verified=0`
+      );
     }
 
     user.isConfirmed = true;
     await user.save();
 
-    res.json({
-      message: "email verified successfully"
-    });
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/auth.html?verified=1`
+    );
   } catch (error) {
-    next(
-      new AppError(
-        "invalid or expired verification link",
-        400
-      )
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/auth.html?verified=0`
     );
   }
 };
