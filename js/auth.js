@@ -132,3 +132,29 @@ if (loginForm) {
     });
 
 }
+
+const params = new URLSearchParams(
+  window.location.search
+);
+
+const verified = params.get("verified");
+
+if (verified === "1") {
+  const message =
+    document.getElementById("loginMessage");
+
+  if (message) {
+    message.textContent =
+      "Email verified successfully. You can sign in now.";
+  }
+}
+
+if (verified === "0") {
+  const message =
+    document.getElementById("loginMessage");
+
+  if (message) {
+    message.textContent =
+      "Verification link is invalid or expired.";
+  }
+}
