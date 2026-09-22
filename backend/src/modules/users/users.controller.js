@@ -74,9 +74,9 @@ export const verifyEmail = async (req, res) => {
       process.env.EMAIL_TOKEN_SECRET
     );
 
-    const user = await userModel.findOne({
-      email: decoded.email
-    });
+    const user = await userModel.findById(
+      decoded.id
+    );
 
     if (!user) {
       return res.redirect(
