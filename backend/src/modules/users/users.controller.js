@@ -40,7 +40,7 @@ export const register = async (req, res, next) => {
     );
 
     const verificationLink =
-      `http://localhost:3000/auth/verify/${emailToken}`;
+      `https://nightmare-cinema.vercel.app/auth/verify/${emailToken}`;
 
     await sendEmail({
       to: user.email,

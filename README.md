@@ -33,7 +33,7 @@ Full-stack cinema ticket booking system for Nightmare Cinema at Royal Mall.
 5. Make sure MongoDB is running.
 6. Run `npm run dev`.
 
-The API runs on `http://localhost:3000` by default.
+The API runs on `https://nightmare-cinema.vercel.app/` by default.
 
 ### Frontend
 

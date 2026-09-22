@@ -6,7 +6,7 @@ function qsa(selector) {
   return document.querySelectorAll(selector);
 }
 
-const MOVIES_API_URL = "http://localhost:3000";
+const MOVIES_API_URL = "https://nightmare-cinema.vercel.app";
 
 async function fetchMovies() {
 

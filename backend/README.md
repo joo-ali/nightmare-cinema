@@ -8,7 +8,7 @@ Backend structure follows the same training approach: Express + MongoDB/Mongoose
 2. Run `npm install`.
 3. Make sure MongoDB is running locally.
 4. Run `npm run dev`.
-5. Open `http://localhost:3000/`.
+5. Open `https://nightmare-cinema.vercel.app/`.
 
 Expected response:
 

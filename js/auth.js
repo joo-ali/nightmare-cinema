@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "https://nightmare-cinema.vercel.app";
 
 const registerForm = document.getElementById("registerForm");
 
