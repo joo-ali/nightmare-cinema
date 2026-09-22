@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Admin — Nightmare Cinema
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="css/style.css" rel="stylesheet"/>
+  <style>
+   .admin-shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+    .admin-side{background:#09090a;border-right:1px solid var(--line);padding:24px 18px}
+    .admin-side img{width:180px;margin-bottom:34px}
+    .admin-menu button,.admin-menu a{width:100%;border:0;background:transparent;display:flex;align-items:center;gap:10px;color:#aaa49c;padding:12px 14px;border-radius:10px;margin:4px 0;font-size:.88rem;text-decoration:none}
+    .admin-menu button.active,.admin-menu button:hover,.admin-menu a:hover{background:#1b1813;color:var(--gold-soft)}
+    .admin-main{padding:34px}
+    .admin-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:15px;margin:25px 0}
+    .admin-stat{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:20px}
+    .admin-stat small{color:var(--muted)}
+    .admin-stat strong{display:block;font-size:1.6rem;margin-top:8px}
+    .admin-table{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+    .admin-table table{margin:0;color:#eee}
+    .admin-table th,.admin-table td{background:transparent!important;color:inherit!important;border-color:var(--line)!important;padding:14px}
+    .admin-table th{color:#9f9890!important;font-size:.74rem;text-transform:uppercase;letter-spacing:.08em}
+    .admin-table td{font-size:.84rem}
+    .admin-section{display:none}
+    .admin-section.active{display:block}
+    .admin-form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:24px}
+    .admin-form .form-control,.admin-form .form-select{background:#111;border-color:var(--line);color:#eee}
+    .admin-form .form-control:focus,.admin-form .form-select:focus{background:#111;color:#fff;border-color:var(--gold)}
+    .admin-form .form-control::placeholder{color:#777}
+    .admin-message{min-height:24px;margin-top:12px}
+    @media(max-width:900px){.admin-shell{grid-template-columns:1fr}.admin-side{display:none}.admin-cards{grid-template-columns:repeat(2,1fr)}.admin-main{padding:22px}}
+    @media(max-width:520px){.admin-cards{grid-template-columns:1fr}}
+  </style>
+ </head>
+ <body>
+  <div class="admin-shell">
+   <aside class="admin-side">
+    <img alt="Nightmare Cinema" src="assets/brand/nightmare-logo.png"/>
+    <div class="admin-menu">
+     <button class="active" data-admin-section="dashboard">
+      <i class="bi bi-grid">
+      </i>
+      Dashboard
+     </button>
+     <button data-admin-section="movies">
+      <i class="bi bi-film">
+      </i>
+      Movies
+     </button>
+     <button data-admin-section="screens">
+      <i class="bi bi-display">
+      </i>
+      Screens
+     </button>
+     <button data-admin-section="showtimes">
+      <i class="bi bi-clock">
+      </i>
+      Showtimes
+     </button>
+     <button data-admin-section="offers">
+      <i class="bi bi-tags">
+      </i>
+      Offers
+     </button>
+     <button data-admin-section="bookings">
+      <i class="bi bi-ticket-perforated">
+      </i>
+      Bookings
+     </button>
+     <a href="index.html">
+      <i class="bi bi-box-arrow-left">
+      </i>
+      Back to site
+     </a>
+    </div>
+   </aside>
+   <main class="admin-main">
+    <section class="admin-section active" id="admin-dashboard">
+     <div>
+      <span class="eyebrow">
+       Nightmare Cinema
+      </span>
+      <h1 class="mt-2">
+       Admin Dashboard
+      </h1>
+     </div>
+     <div class="admin-cards">
+      <div class="admin-stat">
+       <small>
+        Movies
+       </small>
+       <strong id="statMovies">
+        0
+       </strong>
+      </div>
+      <div class="admin-stat">
+       <small>
+        Showtimes
+       </small>
+       <strong id="statShowtimes">
+        0
+       </strong>
+      </div>
+      <div class="admin-stat">
+       <small>
+        Screens
+       </small>
+       <strong id="statScreens">
+        0
+       </strong>
+      </div>
+      <div class="admin-stat">
+       <small>
+        Bookings
+       </small>
+       <strong id="statBookings">
+        0
+       </strong>
+      </div>
+      <div class="admin-stat">
+       <small>
+        Offers
+       </small>
+       <strong id="statOffers">
+        0
+       </strong>
+      </div>
+     </div>
+     <div class="section-title-row compact">
+      <div>
+       <span class="eyebrow">
+        Overview
+       </span>
+       <h2>
+        Latest bookings
+       </h2>
+      </div>
+     </div>
+     <div class="admin-table table-responsive">
+      <table class="table align-middle">
+       <thead>
+        <tr>
+         <th>
+          Code
+         </th>
+         <th>
+          User
+         </th>
+         <th>
+          Movie
+         </th>
+         <th>
+          Seats
+         </th>
+         <th>
+          Total
+         </th>
+         <th>
+          Status
+         </th>
+        </tr>
+       </thead>
+       <tbody id="dashboardBookings">
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="admin-section" id="admin-movies">
+     <div class="section-title-row">
+      <div>
+       <span class="eyebrow">
+        Manage
+       </span>
+       <h1>
+        Movies
+       </h1>
+      </div>
+     </div>
+     <form class="admin-form" id="addMovieForm">
+      <input id="movieEditId" type="hidden"/>
+      <div class="row g-3">
+       <div class="col-md-6">
+        <input class="form-control" id="movieTitle" placeholder="Title" required=""/>
+       </div>
+       <div class="col-md-6">
+        <input class="form-control" id="moviePoster" placeholder="Poster URL" required=""/>
+       </div>
+       <div class="col-12">
+        <textarea class="form-control" id="movieDescription" placeholder="Description" required="" rows="3"></textarea>
+       </div>
+       <div class="col-md-4">
+        <input class="form-control" id="movieGenre" placeholder="Genres: Action, Adventure"/>
+       </div>
+       <div class="col-md-4">
+        <input class="form-control" id="movieLanguage" placeholder="Language" required=""/>
+       </div>
+       <div class="col-md-4">
+        <input class="form-control" id="movieDuration" min="1" placeholder="Duration" required="" type="number"/>
+       </div>
+       <div class="col-md-4">
+        <input class="form-control" id="movieAgeRating" placeholder="Age rating"/>
+       </div>
+       <div class="col-md-4">
+        <input class="form-control" id="movieReleaseDate" type="date"/>
+       </div>
+       <div class="col-md-4">
+        <select class="form-select" id="movieStatus">
+         <option value="now_showing">
+          Now Showing
+         </option>
+         <option value="coming_soon">
+          Coming Soon
+         </option>
+        </select>
+       </div>
+       <div class="col-md-6">
+        <input class="form-control" id="movieBackdrop" placeholder="Backdrop URL"/>
+       </div>
+       <div class="col-md-6">
+        <input class="form-control" id="movieTrailer" placeholder="Trailer URL"/>
+       </div>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+       <button class="btn btn-gold" id="movieSubmitButton" type="submit">
+        Add Movie
+       </button>
+       <button class="btn btn-outline-light-custom d-none" id="cancelMovieEdit" type="button">
+        Cancel Edit
+       </button>
+      </div>
+      <div class="admin-message" id="movieMessage">
+      </div>
+     </form>
+     <div class="admin-table table-responsive">
+      <table class="table align-middle">
+       <thead>
+        <tr>
+         <th>
+          Movie
+         </th>
+         <th>
+          Language
+         </th>
+         <th>
+          Duration
+         </th>
+         <th>
+          Status
+         </th>
+         <th>
+         </th>
+        </tr>
+       </thead>
+       <tbody id="moviesAdminRows">
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="admin-section" id="admin-screens">
+     <div class="section-title-row">
+      <div>
+       <span class="eyebrow">
+        Manage
+       </span>
+       <h1>
+        Screens
+       </h1>
+      </div>
+     </div>
+     <form class="admin-form" id="addScreenForm">
+      <div class="row g-3">
+       <div class="col-md-3">
+        <input class="form-control" id="screenName" placeholder="Screen name" required=""/>
+       </div>
+       <div class="col-md-3">
+        <select class="form-select" id="screenExperience" required="">
+         <option value="Standard">
+          Standard
+         </option>
+         <option value="MAX">
+          MAX
+         </option>
+         <option value="GOLD">
+          GOLD
+         </option>
+         <option value="4DX">
+          4DX
+         </option>
+        </select>
+       </div>
+       <div class="col-md-3">
+        <input class="form-control" id="screenRows" min="1" placeholder="Rows" required="" type="number"/>
+       </div>
+       <div class="col-md-3">
+        <input class="form-control" id="screenSeatsPerRow" min="1" placeholder="Seats per row" required="" type="number"/>
+       </div>
+      </div>
+      <button class="btn btn-gold mt-3" type="submit">
+       Add Screen
+      </button>
+      <div class="admin-message" id="screenMessage">
+      </div>
+     </form>
+     <div class="admin-table table-responsive">
+      <table class="table align-middle">
+       <thead>
+        <tr>
+         <th>
+          Name
+         </th>
+         <th>
+          Experience
+         </th>
+         <th>
+          Rows
+         </th>
+         <th>
+          Seats / Row
+         </th>
+         <th>
+          Total Seats
+         </th>
+        </tr>
+       </thead>
+       <tbody id="screensAdminRows">
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="admin-section" id="admin-showtimes">
+     <div class="section-title-row">
+      <div>
+       <span class="eyebrow">
+        Manage
+       </span>
+       <h1>
+        Showtimes
+       </h1>
+      </div>
+     </div>
+     <form class="admin-form" id="addShowtimeForm">
+      <div class="row g-3">
+       <div class="col-md-4">
+        <select class="form-select" id="showtimeMovie" required="">
+        </select>
+       </div>
+       <div class="col-md-4">
+        <select class="form-select" id="showtimeScreen" required="">
+        </select>
+       </div>
+       <div class="col-md-4">
+        <input class="form-control" id="showtimeStartTime" required="" type="datetime-local"/>
+       </div>
+       <div class="col-md-6">
+        <input class="form-control" id="showtimePrice" min="1" placeholder="Price" required="" type="number"/>
+       </div>
+       <div class="col-md-6">
+        <select class="form-select" id="showtimeFormat">
+         <option value="2D">
+          2D
+         </option>
+         <option value="3D">
+          3D
+         </option>
+        </select>
+       </div>
+      </div>
+      <button class="btn btn-gold mt-3" type="submit">
+       Add Showtime
+      </button>
+      <div class="admin-message" id="showtimeMessage">
+      </div>
+     </form>
+     <div class="admin-table table-responsive">
+      <table class="table align-middle">
+       <thead>
+        <tr>
+         <th>
+          Movie
+         </th>
+         <th>
+          Screen
+         </th>
+         <th>
+          Date
+         </th>
+         <th>
+          Time
+         </th>
+         <th>
+          Price
+         </th>
+         <th>
+          Format
+         </th>
+         <th>
+         </th>
+        </tr>
+       </thead>
+       <tbody id="showtimesAdminRows">
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="admin-section" id="admin-offers">
+     <div class="section-title-row">
+      <div>
+       <span class="eyebrow">
+        Manage
+       </span>
+       <h1>
+        Offers
+       </h1>
+      </div>
+     </div>
+     <form class="admin-form" id="offerForm">
+      <input id="offerEditId" type="hidden"/>
+      <div class="row g-3">
+       <div class="col-md-6">
+        <input class="form-control" id="offerTitle" placeholder="Offer title" required=""/>
+       </div>
+       <div class="col-md-6">
+        <input class="form-control" id="offerCode" placeholder="Promo code"/>
+       </div>
+       <div class="col-12">
+        <textarea class="form-control" id="offerDescription" placeholder="Description" required="" rows="3"></textarea>
+       </div>
+       <div class="col-md-4">
+        <input class="form-control" id="offerImage" placeholder="Image URL"/>
+       </div>
+       <div class="col-md-2">
+        <select class="form-select" id="offerDiscountType">
+         <option value="percentage">
+          Percentage
+         </option>
+         <option value="fixed">
+          Fixed EGP
+         </option>
+        </select>
+       </div>
+       <div class="col-md-2">
+        <input class="form-control" id="offerDiscountValue" min="0" placeholder="Discount" step="0.01" type="number"/>
+       </div>
+       <div class="col-md-4">
+        <div class="d-flex gap-2">
+         <input class="form-control" id="offerDateInput" type="date"/>
+         <button class="btn btn-outline-light-custom" id="addOfferDate" type="button">
+          Add Date
+         </button>
+        </div>
+       </div>
+       <div class="col-md-2">
+        <select class="form-select" id="offerActive">
+         <option value="true">
+          Active
+         </option>
+         <option value="false">
+          Inactive
+         </option>
+        </select>
+       </div>
+       <div class="col-12">
+        <label class="nc-label mb-2">
+         Valid Dates
+        </label>
+        <div class="d-flex flex-wrap gap-2" id="offerDatesList">
+        </div>
+       </div>
+       <div class="col-12">
+        <label class="nc-label mb-2">
+         Applicable Movies
+        </label>
+        <div class="row g-2" id="offerMoviesList">
+        </div>
+        <div class="small text-secondary mt-2">
+         Leave all movies unchecked to apply the offer to all movies.
+        </div>
+       </div>
+      </div>
+      <div class="d-flex gap-2 mt-3">
+       <button class="btn btn-gold" id="offerSubmitButton" type="submit">
+        Add Offer
+       </button>
+       <button class="btn btn-outline-light-custom d-none" id="cancelOfferEdit" type="button">
+        Cancel Edit
+       </button>
+      </div>
+      <div class="admin-message" id="offerMessage">
+      </div>
+     </form>
+     <div class="admin-table table-responsive">
+      <table class="table align-middle">
+       <thead>
+        <tr>
+         <th>
+          Offer
+         </th>
+         <th>
+          Code
+         </th>
+         <th>
+          Discount
+         </th>
+         <th>
+          Valid Dates
+         </th>
+         <th>
+          Movies
+         </th>
+         <th>
+          Status
+         </th>
+         <th>
+         </th>
+        </tr>
+       </thead>
+       <tbody id="offersAdminRows">
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="admin-section" id="admin-bookings">
+     <div class="section-title-row">
+      <div>
+       <span class="eyebrow">
+        Manage
+       </span>
+       <h1>
+        Bookings
+       </h1>
+      </div>
+     </div>
+     <div class="admin-table table-responsive">
+      <table class="table align-middle">
+       <thead>
+        <tr>
+         <th>
+          Code
+         </th>
+         <th>
+          User
+         </th>
+         <th>
+          Movie
+         </th>
+         <th>
+          Screen
+         </th>
+         <th>
+          Seats
+         </th>
+         <th>
+          Total
+         </th>
+         <th>
+          Status
+         </th>
+        </tr>
+       </thead>
+       <tbody id="bookingsAdminRows">
+       </tbody>
+      </table>
+     </div>
+    </section>
+   </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+  </script>
+  <script src="js/admin.js">
+  </script>
+ </body>
+</html>
