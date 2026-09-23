@@ -34,11 +34,6 @@ function getGenre(movie) {
   return movie.genre || "Movie";
 }
 
-function getMovie(id) {
-  return MOVIES.find(function (movie) {
-    return movie.id === id;
-  }) || MOVIES[0];
-}
 
 function money(value) {
   return "EGP " + value;

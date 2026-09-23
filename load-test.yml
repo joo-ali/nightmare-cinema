@@ -1,0 +1,12 @@
+config:
+  target: "https://nightmare-cinema.vercel.app"
+  phases:
+    - duration: 60
+      arrivalRate: 35
+
+scenarios:
+  - flow:
+      - get:
+          url: "/movies"
+      - get:
+          url: "/showtimes"
