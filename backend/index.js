@@ -4,6 +4,12 @@ import dotenv from "dotenv";
 import { dbConnection } from "./db/dbConnection.js";
 import { AppError } from "./src/utilities/AppError.js";
 import { errorHandling } from "./src/middleware/errorHandling.js";
+import { userRoutes } from "./src/modules/users/users.routes.js";
+import { passwordRoutes } from "./src/modules/auth/password.routes.js";
+import { movieRoutes } from "./src/modules/movies/movies.routes.js";
+import { screenRoutes } from "./src/modules/showtimes/screens.routes.js";
+import { showtimeRoutes } from "./src/modules/showtimes/showtimes.routes.js";
+import { bookingRoutes } from "./src/modules/bookings/bookings.routes.js";
 
 dotenv.config();
 
@@ -25,6 +31,13 @@ app.get("/", (req, res) => {
     cinema: "Royal Mall"
   });
 });
+
+app.use(userRoutes);
+app.use(passwordRoutes);
+app.use(movieRoutes);
+app.use(screenRoutes);
+app.use(showtimeRoutes);
+app.use(bookingRoutes);
 
 app.use((req, res, next) => {
   next(new AppError("url not found", 404));

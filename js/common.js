@@ -10,6 +10,15 @@ function money(value) {
   return "EGP " + value;
 }
 
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function updateNavbarAuth() {
 
   const user = JSON.parse(
@@ -26,6 +35,8 @@ function updateNavbarAuth() {
 
   if (user && token) {
 
+    const safeName = escapeHTML(user.name);
+
     signInButton.outerHTML = `
       <div class="dropdown">
 
@@ -34,7 +45,7 @@ function updateNavbarAuth() {
           type="button"
           data-bs-toggle="dropdown"
         >
-          ${user.name}
+          ${safeName}
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end">
