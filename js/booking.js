@@ -1,4 +1,4 @@
-const MOVIES_API_URL = "https://nightmare-cinema.vercel.app";
+const MOVIES_API_URL = "https://nightmare-cinema-zh55.vercel.app";
 
 async function renderBooking() {
 
@@ -338,129 +338,425 @@ function renderCheckout() {
   form.addEventListener(
     "submit",
     async function (event) {
+
       event.preventDefault();
 
-      const token = localStorage.getItem("nightmareToken");
-      const message = qs("#checkoutMessage");
-      const submitButton = form.querySelector('button[type="submit"]');
+      const token =
+        localStorage.getItem(
+          "nightmareToken"
+        );
+
+      const message =
+        qs("#checkoutMessage");
+
+      const submitButton =
+        form.querySelector(
+          'button[type="submit"]'
+        );
 
       if (!token) {
+
         if (message) {
           message.textContent =
-            "Please sign in before confirming your booking.";
+            "Please sign in before payment.";
         }
 
         setTimeout(function () {
-          window.location.href = "auth.html";
+
+          window.location.href =
+            "auth.html";
+
         }, 1200);
 
         return;
       }
 
-      const customerName = qs("#fullName").value.trim();
-      const customerEmail = qs("#email").value.trim();
-
       submitButton.disabled = true;
-      submitButton.textContent = "Confirming booking...";
+
+      submitButton.textContent =
+        "Preparing payment...";
 
       if (message) {
         message.textContent = "";
       }
 
       try {
-        const response = await fetch(
-          `${MOVIES_API_URL}/bookings`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              showtime: booking.showtimeId,
-              seats: booking.seats
-            })
-          }
-        );
 
-        const data = await response.json();
+        const bookingResponse =
+          await fetch(
+            `${MOVIES_API_URL}/bookings`,
+            {
+              method: "POST",
 
-        if (!response.ok) {
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${token}`
+              },
+
+              body: JSON.stringify({
+                showtime:
+                  booking.showtimeId,
+
+                seats:
+                  booking.seats
+              })
+            }
+          );
+
+        const bookingData =
+          await bookingResponse.json();
+
+        if (!bookingResponse.ok) {
+
           throw new Error(
-            data.message || "Booking failed"
+            bookingData.message ||
+            "Booking failed"
           );
         }
 
-        const savedBooking = data.booking || data;
+        const savedBooking =
+          bookingData.booking;
 
-        const confirmedBooking = {
+
+        const pendingBooking = {
+
           ...booking,
-          bookingId: savedBooking._id,
-          bookingCode: savedBooking.bookingCode,
-          subtotal: savedBooking.subtotal ?? booking.total,
-          total: savedBooking.totalPrice ?? booking.total,
-          ticketPrice: savedBooking.ticketPrice ?? booking.price,
-          customerName,
-          customerEmail
+
+          bookingId:
+            savedBooking._id,
+
+          bookingCode:
+            savedBooking.bookingCode,
+
+          total:
+            savedBooking.totalPrice,
+
+          customerName:
+            qs("#fullName").value.trim(),
+
+          customerEmail:
+            qs("#email").value.trim()
         };
 
+
         localStorage.setItem(
-          "nightmareConfirmedBooking",
-          JSON.stringify(confirmedBooking)
+          "nightmarePendingBooking",
+          JSON.stringify(
+            pendingBooking
+          )
         );
 
-        localStorage.removeItem("nightmareBooking");
-        localStorage.removeItem("nightmareSelection");
 
-        window.location.href = "success.html";
+        const paymentResponse =
+          await fetch(
+            `${MOVIES_API_URL}/payments/create-session`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${token}`
+              },
+
+              body: JSON.stringify({
+                bookingId:
+                  savedBooking._id
+              })
+            }
+          );
+
+
+        const paymentData =
+          await paymentResponse.json();
+
+
+        if (!paymentResponse.ok) {
+
+          throw new Error(
+            paymentData.message ||
+            "Could not start payment"
+          );
+        }
+
+
+        if (!paymentData.sessionUrl) {
+
+          throw new Error(
+            "Payment URL was not returned"
+          );
+        }
+
+
+        window.location.href =
+          paymentData.sessionUrl;
+
+
       } catch (error) {
+
         console.error(error);
 
         if (message) {
+
           message.textContent =
-            error.message +
-            (
-              error.message
-                .toLowerCase()
-                .includes("already booked")
-                ? " Go back and choose different seats."
-                : ""
-            );
+            error.message;
+
         }
 
         submitButton.disabled = false;
-        submitButton.textContent = "Confirm booking";
+
+        submitButton.textContent =
+          "Pay with Kashier";
+
       }
+
     }
   );
 }
 
-function renderSuccess() {
-  var root = qs("#successTicket");
+async function renderSuccess() {
+
+  const root =
+    qs("#successTicket");
+
   if (!root) return;
-  var booking = JSON.parse(localStorage.getItem("nightmareConfirmedBooking") || "null");
-  if (!booking) {
-    window.location.href = "index.html";
+
+
+  const token =
+    localStorage.getItem(
+      "nightmareToken"
+    );
+
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const bookingId =
+    params.get("bookingId");
+
+
+  if (!token || !bookingId) {
+
+    window.location.href =
+      "index.html";
+
     return;
   }
 
-  qs("#successMovie").textContent = booking.movieTitle;
-  qs("#successSession").textContent = booking.date + " · " + booking.time;
-  qs("#successSeats").textContent = booking.seats.join(", ");
-  qs("#successCode").textContent = booking.bookingCode;
-  qs("#successEmail").textContent = booking.customerEmail;
-  qs("#successTotal").textContent = money(booking.total);
 
-  var qrTarget = qs("#qrCode");
-  if (qrTarget && window.QRCode) {
-    new QRCode(qrTarget, {
-      text: booking.bookingCode + " | " + booking.movieTitle + " | " + booking.seats.join(","),
-      width: 150,
-      height: 150,
-      colorDark: "#111111",
-      colorLight: "#ffffff"
-    });
+  const pendingBooking =
+    JSON.parse(
+      localStorage.getItem(
+        "nightmarePendingBooking"
+      ) || "null"
+    );
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${MOVIES_API_URL}/payments/verify/${bookingId}`,
+        {
+          headers: {
+            "Authorization":
+              `Bearer ${token}`
+          }
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Could not verify payment"
+      );
+    }
+
+
+    if (
+      data.paymentStatus !==
+      "PAID"
+    ) {
+
+      root.innerHTML = `
+        <div class="text-center py-5">
+
+          <h2>
+            Payment not confirmed yet
+          </h2>
+
+          <p>
+            Current status:
+            ${data.paymentStatus || "PENDING"}
+          </p>
+
+          <a
+            href="my-bookings.html"
+            class="btn btn-gold"
+          >
+            My Bookings
+          </a>
+
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const savedBooking =
+      data.booking;
+
+
+    const showtime =
+      savedBooking.showtime;
+
+
+    const movie =
+      showtime?.movie;
+
+
+    const startTime =
+      showtime?.startTime
+        ? new Date(
+            showtime.startTime
+          )
+        : null;
+
+
+    const date =
+      startTime
+        ? startTime.toLocaleDateString(
+            "en-GB"
+          )
+        : "";
+
+
+    const time =
+      startTime
+        ? startTime.toLocaleTimeString(
+            "en-US",
+            {
+              hour: "numeric",
+              minute: "2-digit"
+            }
+          )
+        : "";
+
+
+    qs("#successMovie").textContent =
+      movie?.title ||
+      pendingBooking?.movieTitle ||
+      "Movie";
+
+
+    qs("#successSession").textContent =
+      `${date} · ${time}`;
+
+
+    qs("#successSeats").textContent =
+      savedBooking.seats.join(", ");
+
+
+    qs("#successCode").textContent =
+      savedBooking.bookingCode;
+
+
+    qs("#successEmail").textContent =
+      savedBooking.user?.email ||
+      pendingBooking?.customerEmail ||
+      "";
+
+
+    qs("#successTotal").textContent =
+      money(
+        savedBooking.totalPrice
+      );
+
+
+    const qrTarget =
+      qs("#qrCode");
+
+
+    if (
+      qrTarget &&
+      window.QRCode
+    ) {
+
+      new QRCode(
+        qrTarget,
+        {
+          text:
+            savedBooking.bookingCode +
+            " | " +
+            (movie?.title || "Movie") +
+            " | " +
+            savedBooking.seats.join(","),
+
+          width: 150,
+          height: 150,
+          colorDark: "#111111",
+          colorLight: "#ffffff"
+        }
+      );
+
+    }
+
+
+    localStorage.removeItem(
+      "nightmareBooking"
+    );
+
+    localStorage.removeItem(
+      "nightmareSelection"
+    );
+
+    localStorage.removeItem(
+      "nightmarePendingBooking"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    root.innerHTML = `
+      <div class="text-center py-5">
+
+        <h2>
+          Could not verify payment
+        </h2>
+
+        <p>
+          ${error.message}
+        </p>
+
+        <a
+          href="my-bookings.html"
+          class="btn btn-gold"
+        >
+          My Bookings
+        </a>
+
+      </div>
+    `;
+
   }
+
 }
 
 async function renderMyBookings() {

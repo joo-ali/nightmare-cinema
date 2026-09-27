@@ -10,6 +10,7 @@ import { movieRoutes } from "./src/modules/movies/movies.routes.js";
 import { screenRoutes } from "./src/modules/showtimes/screens.routes.js";
 import { showtimeRoutes } from "./src/modules/showtimes/showtimes.routes.js";
 import { bookingRoutes } from "./src/modules/bookings/bookings.routes.js";
+import { paymentRoutes } from "./src/modules/payments/payment.routes.js";
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ app.use(
   cors({
     origin:
       process.env.FRONTEND_URL ||
-      "https://nightmare-cinema-1.pages.dev"
+      "https://nightmare-cinema.pages.dev"
   })
 );
 
@@ -38,6 +39,7 @@ app.use(movieRoutes);
 app.use(screenRoutes);
 app.use(showtimeRoutes);
 app.use(bookingRoutes);
+app.use(paymentRoutes);
 
 app.use((req, res, next) => {
   next(new AppError("url not found", 404));

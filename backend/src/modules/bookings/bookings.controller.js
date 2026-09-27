@@ -165,14 +165,16 @@ export const createBooking = async (req, res, next) => {
 
     try {
       booking = await bookingModel.create({
-        user: req.user.id,
-        showtime,
-        seats: selectedSeats,
-        ticketPrice: showtimeData.price,
-        subtotal,
-        totalPrice,
-        bookingCode: generateBookingCode()
-      });
+      user: req.user.id,
+      showtime,
+      seats: selectedSeats,
+      ticketPrice: showtimeData.price,
+      subtotal,
+      totalPrice,
+      bookingCode: generateBookingCode(),
+      status: "pending_payment",
+      paymentStatus: "pending"
+    });
     } catch (error) {
       await showtimeModel.findByIdAndUpdate(
         showtime,
@@ -209,7 +211,7 @@ export const createBooking = async (req, res, next) => {
       }
     ]);
 
-    try {
+    /*try {
       await sendEmail({
         to: booking.user.email,
         subject:
@@ -222,10 +224,10 @@ export const createBooking = async (req, res, next) => {
         "booking confirmation email failed:",
         emailError.message
       );
-    }
+    }*/
 
     res.status(201).json({
-      message: "booking created successfully",
+      message: "booking created, payment required",
       booking
     });
   } catch (error) {

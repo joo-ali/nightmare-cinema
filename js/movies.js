@@ -1,5 +1,5 @@
-const MOVIES_API_URL = "https://nightmare-cinema.vercel.app";
-
+const MOVIES_API_URL =
+  "https://nightmare-cinema-zh55.vercel.app";
 async function fetchMovies() {
 
   const response = await fetch(

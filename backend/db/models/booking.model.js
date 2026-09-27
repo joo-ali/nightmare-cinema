@@ -37,9 +37,43 @@ const bookingSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["confirmed", "cancelled"],
-      default: "confirmed",
+      enum: [
+        "pending_payment",
+        "confirmed",
+        "cancelled"
+      ],
+      default: "pending_payment",
       index: true
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: [
+        "pending",
+        "paid",
+        "failed"
+      ],
+      default: "pending",
+      index: true
+    },
+
+    kashierSessionId: {
+      type: String,
+    },
+
+    kashierSessionUrl: {
+      type: String,
+      default: null
+    },
+
+    paymentExpiresAt: {
+      type: Date,
+      default: null
+    },
+
+    paidAt: {
+      type: Date,
+      default: null
     }
   },
   {
@@ -52,5 +86,17 @@ bookingSchema.index({
   user: 1,
   createdAt: -1
 });
+
+bookingSchema.index(
+  { kashierSessionId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      kashierSessionId: {
+        $type: "string"
+      }
+    }
+  }
+);
 
 export const bookingModel = model("Booking", bookingSchema);

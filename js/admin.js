@@ -1,4 +1,4 @@
-const API_URL = "https://nightmare-cinema.vercel.app";
+const API_URL = "https://nightmare-cinema-zh55.vercel.app";
 
 const token = localStorage.getItem("nightmareToken");
 

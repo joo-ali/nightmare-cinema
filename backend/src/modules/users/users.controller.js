@@ -66,7 +66,7 @@ export const register = async (req, res, next) => {
     );
 
     const verificationLink =
-      `https://nightmare-cinema.vercel.app/auth/verify/${emailToken}`;
+      `https://nightmare-cinema-zh55.vercel.app/auth/verify/${emailToken}`;
 
     try {
     await sendEmail({

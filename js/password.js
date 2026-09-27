@@ -1,6 +1,5 @@
 const PASSWORD_API_URL =
-  "https://nightmare-cinema.vercel.app";
-
+  "https://nightmare-cinema-zh55.vercel.app";
 const forgotPasswordForm =
   document.getElementById(
     "forgotPasswordForm"
