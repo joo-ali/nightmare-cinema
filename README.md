@@ -291,9 +291,3 @@ pull request
   ↓
 merge into main
 ```
-
-## Notes
-
-- Online payment fields are currently interface elements until a real payment gateway is integrated.
-- The frontend and backend are connected through JavaScript `fetch()` requests.
-- MongoDB stores the real application data used by the website.
