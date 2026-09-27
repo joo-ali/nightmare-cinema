@@ -328,7 +328,10 @@ button,input,select {
 }
 
 .movie-card {
-  min-width:0
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .movie-poster {
@@ -398,14 +401,18 @@ button,input,select {
 }
 
 .movie-card-body {
-  padding:14px 2px 0
+  padding: 14px 2px 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .movie-card h3 {
-  font-size:1rem;
-  margin:0 0 5px;
-  line-height:1.4;
-  font-weight:700
+  font-size: 1rem;
+  margin: 0 0 5px;
+  line-height: 1.4;
+  font-weight: 700;
+  min-height: 2.8em;
 }
 
 .movie-card p {
@@ -414,11 +421,12 @@ button,input,select {
   margin:0
 }
 
-.movie-card-actions {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:12px
+.movie-card h3 {
+  font-size: 1rem;
+  margin: 0 0 5px;
+  line-height: 1.4;
+  font-weight: 700;
+  min-height: 2.8em;
 }
 
 .page-hero {
@@ -1147,6 +1155,12 @@ button,input,select {
   font-size:.68rem;
   color:#625f5a;
   margin-top:22px
+}
+
+@media (max-width: 1200px) {
+  .movie-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media(max-width:991px) {
