@@ -3,53 +3,10 @@ import { randomBytes } from "crypto";
 
 import { bookingModel } from "../../../db/models/booking.model.js";
 import { showtimeModel } from "../../../db/models/showtime.model.js";
-<<<<<<< Updated upstream
-import { offerModel } from "../../../db/models/offer.model.js";
-import { sendEmail } from "../../utilities/email.js";
-import { bookingConfirmationEmailTemplate } from "../../utilities/bookingEmailTemplate.js";
-=======
 
->>>>>>> Stashed changes
 import { AppError } from "../../utilities/AppError.js";
 import { cleanupExpiredPayments } from "../payments/payment.cleanup.js";
 
-
-function getCinemaDateCode(date) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "Africa/Cairo"
-  }).formatToParts(new Date(date));
-
-  const values = {};
-
-  parts.forEach((part) => {
-    values[part.type] = part.value;
-  });
-
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
-function offerAppliesToMovie(offer, movieId) {
-  if (
-    !Array.isArray(offer.applicableMovies) ||
-    offer.applicableMovies.length === 0
-  ) {
-    return true;
-  }
-
-  return offer.applicableMovies.some(
-    (id) => String(id?._id || id) === String(movieId)
-  );
-}
-
-function isOfferAvailableToday(offer) {
-  return (
-    Array.isArray(offer.validDates) &&
-    offer.validDates.includes(getCinemaDateCode(new Date()))
-  );
-}
 
 function generateBookingCode() {
   return `NM-${randomBytes(4)
@@ -88,82 +45,16 @@ function getScreenSeats(
   return seats;
 }
 
-<<<<<<< Updated upstream
-function getDiscount(subtotal, offer) {
-  if (!offer) {
-    return 0;
-  }
-
-  if (offer.discountType === "percentage") {
-    return Math.min(
-      subtotal,
-      Number(
-        (
-          subtotal *
-          (offer.discountValue / 100)
-        ).toFixed(2)
-      )
-    );
-  }
-
-  return Math.min(subtotal, offer.discountValue);
-}
-
-async function getValidOffer(promoCode, movieId) {
-  const code = String(promoCode || "")
-    .trim()
-    .toUpperCase();
-
-  if (!code) {
-    return null;
-  }
-
-  const offer = await offerModel.findOne({
-    code,
-    active: true,
-    discountValue: {
-      $gt: 0
-    }
-  });
-
-  if (!offer) {
-    throw new AppError(
-      "invalid or inactive promo code",
-      400
-    );
-  }
-
-  if (!isOfferAvailableToday(offer)) {
-    throw new AppError(
-      "promo code can only be used on its valid booking date",
-      400
-    );
-  }
-
-  if (!offerAppliesToMovie(offer, movieId)) {
-    throw new AppError(
-      "promo code is not valid for this movie",
-      400
-    );
-  }
-
-  return offer;
-}
-
-export const createBooking = async (req, res, next) => {
-=======
 
 export const createBooking = async (
   req,
   res,
   next
 ) => {
->>>>>>> Stashed changes
   try {
     const {
       showtime,
-      seats,
-      promoCode
+      seats
     } = req.body;
 
 
@@ -304,31 +195,15 @@ export const createBooking = async (
       );
     }
 
-<<<<<<< Updated upstream
-    const offer = await getValidOffer(
-      promoCode,
-      showtimeData.movie
-    );
-=======
->>>>>>> Stashed changes
 
     const subtotal =
       showtimeData.price *
       selectedSeats.length;
 
-<<<<<<< Updated upstream
-    const discountAmount =
-      getDiscount(subtotal, offer);
-
-    const totalPrice = Number(
-      (subtotal - discountAmount).toFixed(2)
-    );
-=======
 
     const totalPrice =
       subtotal;
 
->>>>>>> Stashed changes
 
     const updatedShowtime =
       await showtimeModel
@@ -374,19 +249,6 @@ export const createBooking = async (
 
 
     try {
-<<<<<<< Updated upstream
-      booking = await bookingModel.create({
-        user: req.user.id,
-        showtime,
-        seats: selectedSeats,
-        ticketPrice: showtimeData.price,
-        subtotal,
-        discountAmount,
-        promoCode: offer ? offer.code : "",
-        totalPrice,
-        bookingCode: generateBookingCode()
-      });
-=======
       booking =
         await bookingModel.create({
           user:
@@ -420,7 +282,6 @@ export const createBooking = async (
             )
         });
 
->>>>>>> Stashed changes
     } catch (error) {
 
       await showtimeModel
@@ -462,31 +323,11 @@ export const createBooking = async (
       }
     ]);
 
-<<<<<<< Updated upstream
-    try {
-      await sendEmail({
-        to: booking.user.email,
-        subject:
-          `Nightmare Cinema Booking ${booking.bookingCode}`,
-        html:
-          bookingConfirmationEmailTemplate(booking)
-      });
-    } catch (emailError) {
-      console.error(
-        "booking confirmation email failed:",
-        emailError.message
-      );
-    }
-
-    res.status(201).json({
-      message: "booking created successfully",
-=======
 
     res.status(201).json({
       message:
         "booking created, payment required",
 
->>>>>>> Stashed changes
       booking
     });
 
