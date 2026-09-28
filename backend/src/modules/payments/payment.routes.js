@@ -2,7 +2,8 @@ import express from "express";
 
 import {
   createPaymentSession,
-  verifyPayment
+  verifyPayment,
+  kashierWebhook
 } from "./payment.controller.js";
 
 import {
@@ -25,4 +26,10 @@ paymentRoutes.get(
   "/payments/verify/:bookingId",
   verifyToken,
   verifyPayment
+);
+
+
+paymentRoutes.post(
+  "/payments/kashier-webhook",
+  kashierWebhook
 );

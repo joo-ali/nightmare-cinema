@@ -5,6 +5,10 @@ import { screenModel } from "../../../db/models/screen.model.js";
 import { bookingModel } from "../../../db/models/booking.model.js";
 import { AppError } from "../../utilities/AppError.js";
 
+import {
+  cleanupExpiredPayments
+} from "../payments/payment.cleanup.js";
+
 export const addShowtime = async (req, res, next) => {
   try {
     const {
@@ -159,6 +163,8 @@ export const getShowtimeSeats = async (req, res, next) => {
         new AppError("invalid showtime id", 400)
       );
     }
+
+    await cleanupExpiredPayments(showtime);
 
     const showtime = await showtimeModel
       .findById(id)
