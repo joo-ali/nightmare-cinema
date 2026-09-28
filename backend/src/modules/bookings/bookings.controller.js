@@ -86,9 +86,7 @@ export const createBooking = async (
     }
 
 
-    await cleanupExpiredPayments(
-      showtime
-    );
+    await cleanupExpiredPayments(showtime);
 
 
     const selectedSeats =

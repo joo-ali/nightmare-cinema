@@ -164,7 +164,7 @@ export const getShowtimeSeats = async (req, res, next) => {
       );
     }
 
-    await cleanupExpiredPayments(showtime);
+    await cleanupExpiredPayments(id);
 
     const showtime = await showtimeModel
       .findById(id)
